@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -293,7 +292,16 @@ export function ListItemForm() {
               </Button>
             )}
             {currentStep < LIST_ITEM_STEPS.length && (
-              <Button type="button" onClick={nextStep} className="ml-auto" disabled={!isValid && currentStep !==3 /* Allow navigation to review step even if not fully valid */}>
+              <Button 
+                type="button" 
+                onClick={nextStep} 
+                className="ml-auto" 
+                disabled={
+                  currentStep === 1 
+                    ? !watch("photo") || !watch("category") || !watch("condition")
+                    : !isValid && currentStep !== 3
+                }
+              >
                 Next
               </Button>
             )}
