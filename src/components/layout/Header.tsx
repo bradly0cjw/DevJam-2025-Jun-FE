@@ -11,7 +11,7 @@ export function Header() {
       <div className="container flex h-16 max-w-screen-2xl items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <HandHeart className="h-8 w-8 text-primary" />
-          <span className="font-bold text-xl font-headline text-red-600">{APP_NAME}</span>
+          <span className="font-bold text-xl font-headline text-primary">{APP_NAME}</span>
         </Link>
         <nav className="hidden flex-1 md:flex md:items-center md:gap-6 text-sm">
           {NAV_LINKS.map((link) => (

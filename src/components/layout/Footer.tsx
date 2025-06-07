@@ -11,7 +11,7 @@ export function Footer() {
           <div>
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <HandHeart className="h-8 w-8 text-primary" />
-              <span className="font-bold text-xl font-headline text-red-700">{APP_NAME}</span>
+              <span className="font-bold text-xl font-headline text-primary">{APP_NAME}</span>
             </Link>
             <p className="text-sm text-foreground/70">
               Giving clothes a second life, connecting creators with sustainable materials.
