@@ -62,7 +62,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link href="/forgot-password" // This route doesn't exist yet
+                  <Link href="/forgot-password" 
                     className="text-sm text-primary hover:underline">
                     Forgot password?
                   </Link>
@@ -82,9 +82,7 @@ export default function LoginPage() {
               <span className="flex-shrink mx-4 text-xs text-muted-foreground">OR</span>
               <div className="flex-grow border-t border-border"></div>
             </div>
-            {/* Placeholder for social logins */}
             <Button variant="outline" className="w-full">
-              {/* <Chrome className="mr-2 h-4 w-4" /> Uncomment and import Chrome if you use it */}
               Sign in with Google (Coming Soon)
             </Button>
             <p className="text-sm text-muted-foreground text-center">
@@ -100,3 +98,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

@@ -1,13 +1,15 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { APP_NAME } from '@/lib/constants'; // Added this import
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'ReThread - Give Clothes a Second Life',
-  description: 'Recycle your clothes and help designers find unique materials. Join ReThread today!',
+  title: `${APP_NAME} - Give Clothes a Second Life`,
+  description: `Recycle your clothes and help designers find unique materials. Join ${APP_NAME} today!`,
 };
 
 export default function RootLayout({

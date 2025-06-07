@@ -1,3 +1,4 @@
+
 import { HeroSection } from '@/components/landing/HeroSection';
 import { HowItWorks } from '@/components/landing/HowItWorks';
 import { FeaturedDesigners } from '@/components/landing/FeaturedDesigners';
@@ -5,7 +6,8 @@ import { Testimonials } from '@/components/landing/Testimonials';
 import { StatsCounter } from '@/components/landing/StatsCounter';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BrainCircuit } from 'lucide-react'; // Added BrainCircuit
+import { APP_NAME } from '@/lib/constants';
 
 export default function LandingPage() {
   return (
@@ -21,7 +23,7 @@ export default function LandingPage() {
             Ready to Make a Difference?
           </h2>
           <p className="text-lg text-foreground/80 max-w-xl mx-auto mb-8">
-            Whether you're decluttering or designing, ReThread is your partner in sustainable fashion.
+            Whether you're decluttering or designing, {APP_NAME} is your partner in sustainable fashion.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
             <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transform hover:scale-105 transition-transform">
@@ -34,9 +36,16 @@ export default function LandingPage() {
                 Find Your Materials <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
+            <Button size="lg" variant="outline" asChild className="shadow-lg transform hover:scale-105 transition-transform border-primary text-primary hover:bg-primary/10">
+              <Link href="/smart-matching">
+                <BrainCircuit className="mr-2 h-5 w-5" /> Smart Matching
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
     </>
   );
 }
+
+    

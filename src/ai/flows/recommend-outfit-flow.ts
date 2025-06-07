@@ -10,10 +10,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { initializeApp as initializeAdminApp, getApps as getAdminApps } from 'firebase-admin/app';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
-// import { getStorage as getAdminStorage } from 'firebase-admin/storage'; // Needed if flow fetches image content
 
-// Initialize Firebase Admin SDK if not already initialized
-// This is safe to call multiple times as initializeAdminApp checks internally.
 if (getAdminApps().length === 0) {
   initializeAdminApp();
 }
@@ -25,11 +22,11 @@ export const RecommendOutfitInputSchema = z.object({
 export type RecommendOutfitInput = z.infer<typeof RecommendOutfitInputSchema>;
 
 export const RecommendedItemSchema = z.object({
-  name: z.string().describe("商品名稱"),
-  type: z.string().describe("商品類型 (e.g., 'top', 'bottom')"),
-  color: z.string().describe("主要顏色"),
-  imageUrl: z.string().url().describe("可以直接在 <img> 標籤中使用的公開圖片網址"),
-  description: z.string().optional().describe("商品的簡單描述"),
+  name: z.string().describe("Product name"),
+  type: z.string().describe("Product type (e.g., 'top', 'bottom')"),
+  color: z.string().describe("Main color"),
+  imageUrl: z.string().url().describe("Publicly accessible image URL that can be used directly in an <img> tag"),
+  description: z.string().optional().describe("A brief description of the product"),
 });
 export type RecommendedItem = z.infer<typeof RecommendedItemSchema>;
 
@@ -49,9 +46,6 @@ const recommendOutfitFlow = ai.defineFlow(
     outputSchema: RecommendOutfitOutputSchema,
   },
   async (input: RecommendOutfitInput) => {
-    // const { filePath } = input; // filePath is available for future use (e.g., image analysis)
-    // For V1, we ignore the image content and pick randomly.
-
     const clothesCol = adminDb.collection('clothes');
     const snapshot = await clothesCol.get();
 
@@ -61,19 +55,17 @@ const recommendOutfitFlow = ai.defineFlow(
 
     const allClothesData: any[] = [];
     snapshot.forEach(doc => {
-      allClothesData.push(doc.data()); // Get raw data
+      allClothesData.push(doc.data()); 
     });
 
     const randomIndex = Math.floor(Math.random() * allClothesData.length);
     const selectedRawItem = allClothesData[randomIndex];
 
-    // Validate and structure the selected item against RecommendedItemSchema
-    // This ensures the data from Firestore matches the expected output structure.
     const parseResult = RecommendedItemSchema.safeParse({
         name: selectedRawItem.name,
         type: selectedRawItem.type,
         color: selectedRawItem.color,
-        imageUrl: selectedRawItem.imageUrl, // Assumed to be a public URL stored in Firestore
+        imageUrl: selectedRawItem.imageUrl, 
         description: selectedRawItem.description
     });
 
@@ -86,3 +78,5 @@ const recommendOutfitFlow = ai.defineFlow(
     return { recommendation: parseResult.data };
   }
 );
+
+    

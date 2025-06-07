@@ -59,7 +59,7 @@ export default function SignupPage() {
         <Card className="w-full max-w-md shadow-xl bg-card">
           <CardHeader className="text-center space-y-1">
             <CardTitle className="text-3xl font-bold font-headline text-primary">Join {APP_NAME}</CardTitle>
-            <CardDescription>Create your account to start ReThreading today!</CardDescription>
+            <CardDescription>Create your account to start your sustainable fashion journey today!</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -95,9 +95,7 @@ export default function SignupPage() {
               <span className="flex-shrink mx-4 text-xs text-muted-foreground">OR</span>
               <div className="flex-grow border-t border-border"></div>
             </div>
-            {/* Placeholder for social logins */}
             <Button variant="outline" className="w-full">
-              {/* <Chrome className="mr-2 h-4 w-4" /> */}
               Sign up with Google (Coming Soon)
             </Button>
             <p className="text-sm text-muted-foreground text-center">
@@ -113,3 +111,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+    

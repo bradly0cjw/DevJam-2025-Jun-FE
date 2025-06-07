@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { APP_NAME, FOOTER_LINKS } from '@/lib/constants';
 import { HandHeart } from 'lucide-react';
@@ -10,7 +11,7 @@ export function Footer() {
           <div>
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <HandHeart className="h-8 w-8 text-primary" />
-              <span className="font-bold text-xl font-headline">{APP_NAME}</span>
+              <span className="font-bold text-xl font-headline text-red-700">{APP_NAME}</span>
             </Link>
             <p className="text-sm text-foreground/70">
               Giving clothes a second life, connecting creators with sustainable materials.
@@ -19,7 +20,7 @@ export function Footer() {
           <div>
             <h3 className="text-md font-semibold font-headline text-foreground mb-3">Quick Links</h3>
             <ul className="space-y-2">
-              {FOOTER_LINKS.slice(0,2).map((link) => ( // Show first 2 links
+              {FOOTER_LINKS.slice(0,2).map((link) => ( 
                 <li key={link.label}>
                   <Link href={link.href} className="text-sm text-foreground/70 hover:text-primary transition-colors">
                     {link.label}
@@ -50,3 +51,5 @@ export function Footer() {
     </footer>
   );
 }
+
+    

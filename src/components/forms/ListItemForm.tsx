@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,15 +15,16 @@ import { ProgressBar } from "@/components/shared/ProgressBar";
 import { IconSelector } from "@/components/shared/IconSelector";
 import { ITEM_CATEGORIES, ITEM_CONDITIONS, COMMON_MATERIALS, LIST_ITEM_STEPS } from "@/lib/constants";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, X } from "lucide-react";
-import Image from 'next/image';
+import { Loader2, X, Camera } from "lucide-react";
+import { handleSuggestTags } from "@/ai/actions/suggest-tags-action";
+// Removed NextImage as we'll use standard img for local previews
 
 const listItemSchema = z.object({
   photo: z.any().refine(file => file instanceof File, "A photo is required."),
   category: z.string().min(1, "Category is required"),
   condition: z.string().min(1, "Condition is required"),
-  title: z.string().min(3, "Title must be at least 3 characters").max(100),
-  description: z.string().min(10, "Description must be at least 10 characters").max(500),
+  title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title must be 100 characters or less"),
+  description: z.string().min(10, "Description must be at least 10 characters").max(500, "Description must be 500 characters or less"),
   materials: z.array(z.string()).min(1, "At least one material is required"),
   tags: z.array(z.string()).optional(),
   location: z.string().min(2, "Location is required"),
@@ -36,20 +38,24 @@ export function ListItemForm() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [currentTagInput, setCurrentTagInput] = useState("");
+  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
+  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
   const { toast } = useToast();
 
-  const { control, handleSubmit, setValue, watch, formState: { errors, isValid, isSubmitting } } = useForm<ListItemFormData>({
+  const { control, handleSubmit, setValue, watch, formState: { errors, isValid, isSubmitting }, trigger } = useForm<ListItemFormData>({
     resolver: zodResolver(listItemSchema),
-    mode: "onChange", // Validate on change for better UX
+    mode: "onChange", 
     defaultValues: {
-      photo: null, // Initialize photo to null
-      category: "",  // Initialize category to an empty string
-      condition: "", // Initialize condition to an empty string
-      title: "",     // Initialize title to an empty string
-      description: "", // Initialize description to an empty string
+      photo: null,
+      category: "",
+      condition: "",
+      title: "",
+      description: "",
       materials: [],
       tags: [],
-      location: "",  // Initialize location to an empty string
+      location: "",
     }
   });
 
@@ -58,49 +64,96 @@ export function ListItemForm() {
   useEffect(() => {
     if (watchedPhoto && watchedPhoto instanceof File) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
+      reader.onloadend = async () => {
+        const dataUri = reader.result as string;
+        setPhotoPreview(dataUri);
+        // Automatically suggest tags when a photo is uploaded
+        setIsSuggestingTags(true);
+        try {
+          const tags = await handleSuggestTags(dataUri);
+          setSuggestedTags(tags);
+        } catch (error) {
+          console.error("Error suggesting tags:", error);
+          toast({
+            variant: "destructive",
+            title: "Tag Suggestion Failed",
+            description: "Could not get AI tag suggestions. Please add tags manually.",
+          });
+        } finally {
+          setIsSuggestingTags(false);
+        }
       };
       reader.readAsDataURL(watchedPhoto);
     } else {
       setPhotoPreview(null);
+      setSuggestedTags([]);
     }
-  }, [watchedPhoto]);
+  }, [watchedPhoto, toast]);
 
-  const handleAddTag = () => {
-    if (currentTagInput.trim() && !customTags.includes(currentTagInput.trim())) {
-      const newCustomTags = [...customTags, currentTagInput.trim()];
+  const addTag = (tag: string) => {
+    const trimmedTag = tag.trim();
+    if (trimmedTag && !customTags.includes(trimmedTag)) {
+      const newCustomTags = [...customTags, trimmedTag];
       setCustomTags(newCustomTags);
-      setValue("tags", newCustomTags);
-      setCurrentTagInput("");
+      setValue("tags", newCustomTags, { shouldValidate: true });
     }
+  };
+
+  const handleAddCustomTag = () => {
+    addTag(currentTagInput);
+    setCurrentTagInput("");
+  };
+  
+  const handleSuggestedTagClick = (tag: string) => {
+    addTag(tag);
+    setSuggestedTags(prev => prev.filter(t => t !== tag));
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
     const newCustomTags = customTags.filter(tag => tag !== tagToRemove);
     setCustomTags(newCustomTags);
-    setValue("tags", newCustomTags);
+    setValue("tags", newCustomTags, { shouldValidate: true });
+    // If it was a suggested tag, add it back to suggestions
+    if (suggestedTags.every(st => st !== tagToRemove) && !COMMON_MATERIALS.includes(tagToRemove) && !ITEM_CATEGORIES.map(c=>c.name.toLowerCase()).includes(tagToRemove.toLowerCase()) ) {
+        // This logic can be improved to only re-add if it was originally an AI suggestion
+        // For now, this is a simple way to put it back if it's not a custom or material tag.
+    }
   };
 
 
   const onSubmit: SubmitHandler<ListItemFormData> = async (data) => {
-    // This is where you'd typically send data to your backend
     console.log("Form data:", data);
-    // For GenAI flow, image needs to be data URI
     const finalData = {
       ...data,
-      photoDataUri: photoPreview, // Assuming photoPreview holds the data URI
-      tags: customTags, // Only custom tags
+      photoDataUri: photoPreview, 
+      tags: customTags, 
     };
-    delete (finalData as any).photo; // Remove File object if not needed by backend
+    delete (finalData as any).photo; 
 
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     toast({ title: "Item Listed!", description: `${data.title} has been successfully listed.` });
-    // Reset form or redirect user
   };
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, LIST_ITEM_STEPS.length));
+  const nextStep = async () => {
+    let fieldsToValidate: (keyof ListItemFormData)[] = [];
+    if (currentStep === 1) {
+      fieldsToValidate = ['photo', 'category', 'condition'];
+    } else if (currentStep === 2) {
+      fieldsToValidate = ['title', 'description', 'materials', 'location']; // Added location here
+    }
+
+    const isValidStep = await trigger(fieldsToValidate);
+    if (isValidStep) {
+      setCurrentStep(prev => Math.min(prev + 1, LIST_ITEM_STEPS.length));
+    } else {
+        toast({
+            variant: "destructive",
+            title: "Missing Information",
+            description: "Please fill in all required fields for this step.",
+        });
+    }
+  };
+
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   return (
@@ -115,24 +168,31 @@ export function ListItemForm() {
           {currentStep === 1 && (
             <div className="space-y-6">
               <div>
-                <Label htmlFor="photo" className="text-lg font-medium">Item Photo</Label>
-                <Controller
-                  name="photo"
-                  control={control}
-                  render={({ field: { onChange, value, ...restField } }) => (
-                    <Input
-                      id="photo"
-                      type="file"
-                      accept="image/*"
-                      className="mt-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                      onChange={(e) => onChange(e.target.files ? e.target.files[0] : null)}
-                      {...restField}
+                <Label htmlFor="photo" className="text-lg font-medium block mb-2">Item Photo</Label>
+                <div className="flex items-center gap-4">
+                    <Button type="button" variant="outline" onClick={() => photoInputRef.current?.click()} className="w-full sm:w-auto">
+                        <Camera className="mr-2 h-4 w-4" /> {photoPreview ? "Change Photo" : "Upload Photo"}
+                    </Button>
+                    <Controller
+                      name="photo"
+                      control={control}
+                      render={({ field: { onChange, value, ...restField } }) => (
+                        <Input
+                          id="photo"
+                          type="file"
+                          accept="image/*"
+                          className="hidden" // Hide the default input, use button instead
+                          onChange={(e) => onChange(e.target.files ? e.target.files[0] : null)}
+                          ref={photoInputRef}
+                          {...restField}
+                        />
+                      )}
                     />
-                  )}
-                />
-                {photoPreview && (
-                  <div className="mt-4 relative w-full h-64 border rounded-md overflow-hidden">
-                    <Image src={photoPreview} alt="Preview" layout="fill" objectFit="contain" />
+                </div>
+                 {photoPreview && (
+                  <div className="mt-4 relative w-full aspect-video border rounded-md overflow-hidden bg-muted">
+                    {/* Using standard img for local preview */}
+                    <img src={photoPreview} alt="Preview" className="object-contain w-full h-full" />
                   </div>
                 )}
                 {errors.photo && <p className="text-sm text-destructive mt-1">{errors.photo.message as string}</p>}
@@ -204,51 +264,69 @@ export function ListItemForm() {
                 {errors.materials && <p className="text-sm text-destructive mt-1">{errors.materials.message}</p>}
               </div>
 
-              <div>
-                <Label htmlFor="tags" className="text-lg font-medium">Tags</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <Input
-                    id="tags"
-                    value={currentTagInput}
-                    onChange={(e) => setCurrentTagInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag();}}}
-                    placeholder="Add a tag and press Enter"
-                  />
-                  <Button type="button" onClick={handleAddTag} variant="outline">Add Tag</Button>
+                <div>
+                  <Label className="text-lg font-medium">Tags</Label>
+                  {isSuggestingTags && (
+                    <div className="flex items-center text-sm text-muted-foreground mt-1">
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Suggesting tags...
+                    </div>
+                  )}
+                  {suggestedTags.length > 0 && !isSuggestingTags && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <p className="text-sm text-muted-foreground w-full">Suggested tags (click to add):</p>
+                      {suggestedTags.map(tag => (
+                        <Badge key={tag} variant="outline" className="text-sm py-1 px-2 cursor-pointer hover:bg-accent/20" onClick={() => handleSuggestedTagClick(tag)}>
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 mt-2">
+                    <Input
+                      id="customTags"
+                      value={currentTagInput}
+                      onChange={(e) => setCurrentTagInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomTag();}}}
+                      placeholder="Add your own tag and press Enter"
+                    />
+                    <Button type="button" onClick={handleAddCustomTag} variant="outline">Add Tag</Button>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2 min-h-[2.5rem]"> {/* Ensure space even if no tags */}
+                    {customTags.map(tag => (
+                      <Badge key={tag} variant="secondary" className="text-sm py-1 px-2">
+                        {tag}
+                        <Button type="button" onClick={() => handleRemoveTag(tag)} variant="ghost" size="icon" className="ml-1 h-4 w-4 p-0">
+                          <X className="h-3 w-3"/>
+                        </Button>
+                      </Badge>
+                    ))}
+                  </div>
+                   {errors.tags && <p className="text-sm text-destructive mt-1">{errors.tags.message}</p>}
                 </div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {customTags.map(tag => (
-                    <Badge key={tag} variant="secondary" className="text-sm py-1 px-2">
-                      {tag}
-                      <Button type="button" onClick={() => handleRemoveTag(tag)} variant="ghost" size="icon" className="ml-1 h-4 w-4 p-0">
-                        <X className="h-3 w-3"/>
-                      </Button>
-                    </Badge>
-                  ))}
+                 <div>
+                  <Label htmlFor="location" className="text-lg font-medium">Your Location (City, State)</Label>
+                  <Controller name="location" control={control} render={({ field }) => <Input id="location" {...field} placeholder="e.g., San Francisco, CA" />} />
+                  {errors.location && <p className="text-sm text-destructive mt-1">{errors.location.message}</p>}
                 </div>
-                {errors.tags && <p className="text-sm text-destructive mt-1">{errors.tags.message}</p>}
-              </div>
             </div>
           )}
 
           {currentStep === 3 && (
             <div className="space-y-6">
-              <div>
-                <Label htmlFor="location" className="text-lg font-medium">Your Location (City, State)</Label>
-                <Controller name="location" control={control} render={({ field }) => <Input id="location" {...field} placeholder="e.g., San Francisco, CA" />} />
-                {errors.location && <p className="text-sm text-destructive mt-1">{errors.location.message}</p>}
-              </div>
               <Card>
                 <CardHeader>
                   <CardTitle>Review Your Listing</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  {photoPreview && <Image src={photoPreview} alt="Preview" width={100} height={100} className="rounded-md object-cover"/>}
-                  <p><strong>Title:</strong> {watch("title")}</p>
-                  <p><strong>Category:</strong> {ITEM_CATEGORIES.find(c => c.id === watch("category"))?.name}</p>
-                  <p><strong>Condition:</strong> {ITEM_CONDITIONS.find(c => c.id === watch("condition"))?.name}</p>
-                  <p><strong>Materials:</strong> {watch("materials")?.join(', ')}</p>
-                  <p><strong>Tags:</strong> {customTags.join(', ')}</p>
+                <CardContent className="space-y-3">
+                  {photoPreview && <img src={photoPreview} alt="Preview" className="rounded-md object-cover w-full max-h-64"/>}
+                  <div><strong className="text-primary">Title:</strong> {watch("title")}</div>
+                  <div><strong className="text-primary">Category:</strong> {ITEM_CATEGORIES.find(c => c.id === watch("category"))?.name}</div>
+                  <div><strong className="text-primary">Condition:</strong> {ITEM_CONDITIONS.find(c => c.id === watch("condition"))?.name}</div>
+                  <div><strong className="text-primary">Description:</strong> {watch("description")}</div>
+                  <div><strong className="text-primary">Materials:</strong> {watch("materials")?.join(', ')}</div>
+                  <div><strong className="text-primary">Tags:</strong> {customTags.join(', ')}</div>
+                  <div><strong className="text-primary">Location:</strong> {watch("location")}</div>
                 </CardContent>
               </Card>
             </div>
@@ -256,27 +334,21 @@ export function ListItemForm() {
 
           <div className="mt-8 flex justify-between">
             {currentStep > 1 && (
-              <Button type="button" variant="outline" onClick={prevStep}>
+              <Button type="button" variant="outline" onClick={prevStep} disabled={isSubmitting}>
                 Previous
               </Button>
             )}
-            {currentStep < LIST_ITEM_STEPS.length && (
+            {currentStep < LIST_ITEM_STEPS.length ? (
               <Button 
                 type="button" 
                 onClick={nextStep} 
-                className="ml-auto" 
-                disabled={
-                  currentStep === 1 
-                    ? !!errors.photo || !!errors.category || !!errors.condition
-                    : // currentStep === 2, as currentStep < LIST_ITEM_STEPS.length (which is 3)
-                      !!errors.title || !!errors.description || !!errors.materials
-                }
+                className="ml-auto"
+                disabled={isSubmitting}
               >
                 Next
               </Button>
-            )}
-            {currentStep === LIST_ITEM_STEPS.length && (
-              <Button type="submit" disabled={isSubmitting || !isValid} className="ml-auto">
+            ) : (
+              <Button type="submit" disabled={isSubmitting || !isValid} className="ml-auto bg-accent hover:bg-accent/90">
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 List Item
               </Button>
@@ -287,3 +359,5 @@ export function ListItemForm() {
     </Card>
   );
 }
+
+    

@@ -1,6 +1,8 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BrainCircuit } from 'lucide-react'; // Added BrainCircuit
+import { APP_NAME } from '@/lib/constants';
 
 export function HeroSection() {
   return (
@@ -21,7 +23,7 @@ export function HeroSection() {
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline text-primary mb-6 tracking-tight">
-          Reimagine Fashion. ReThread Your Wardrobe.
+          Reimagine Fashion. ReThread Your Wardrobe with {APP_NAME}.
         </h1>
         <p className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto mb-10">
           Connect with designers, give your clothes a new purpose, and champion sustainable style.
@@ -37,8 +39,15 @@ export function HeroSection() {
               Find Your Materials <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
+          <Button size="lg" variant="outline" asChild className="shadow-lg transform hover:scale-105 transition-transform border-primary text-primary hover:bg-primary/10">
+            <Link href="/smart-matching">
+              <BrainCircuit className="mr-2 h-5 w-5" /> Smart Matching
+            </Link>
+          </Button>
         </div>
       </div>
     </section>
   );
 }
+
+    

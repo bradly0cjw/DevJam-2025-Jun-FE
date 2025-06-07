@@ -1,11 +1,13 @@
+
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Testimonial } from '@/lib/types';
 import { Quote } from 'lucide-react';
+import { APP_NAME } from '@/lib/constants';
 
 const placeholderTestimonials: Testimonial[] = [
-  { id: '1', quote: "ReThread made it so easy to clear out my closet responsibly. Knowing my old clothes are getting a new life with a creative designer feels amazing!", giverName: 'Sarah M.', giverLocation: 'Austin, TX', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'happy person profile' },
-  { id: '2', quote: "As a small designer, finding unique, sustainable materials is crucial. ReThread has been a game-changer for sourcing fabrics with history.", giverName: 'David L.', giverLocation: 'Brooklyn, NY', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'smiling individual face' },
+  { id: '1', quote: `${APP_NAME} made it so easy to clear out my closet responsibly. Knowing my old clothes are getting a new life with a creative designer feels amazing!`, giverName: 'Sarah M.', giverLocation: 'Austin, TX', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'happy person profile' },
+  { id: '2', quote: `As a small designer, finding unique, sustainable materials is crucial. ${APP_NAME} has been a game-changer for sourcing fabrics with history.`, giverName: 'David L.', giverLocation: 'Brooklyn, NY', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'smiling individual face' },
   { id: '3', quote: "I love the concept and the execution. The platform is user-friendly and connects givers and takers seamlessly. Highly recommend!", giverName: 'Priya K.', giverLocation: 'Oakland, CA', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person outdoor background' },
 ];
 
@@ -46,3 +48,5 @@ export function Testimonials() {
     </section>
   );
 }
+
+    

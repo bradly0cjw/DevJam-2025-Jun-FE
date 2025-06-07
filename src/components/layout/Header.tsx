@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -10,7 +11,7 @@ export function Header() {
       <div className="container flex h-16 max-w-screen-2xl items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <HandHeart className="h-8 w-8 text-primary" />
-          <span className="font-bold text-xl font-headline">{APP_NAME}</span>
+          <span className="font-bold text-xl font-headline text-red-600">{APP_NAME}</span>
         </Link>
         <nav className="hidden flex-1 md:flex md:items-center md:gap-6 text-sm">
           {NAV_LINKS.map((link) => (
@@ -19,6 +20,7 @@ export function Header() {
               href={link.href}
               className="text-foreground/70 transition-colors hover:text-foreground"
             >
+              {link.icon && <link.icon className="mr-1.5 h-4 w-4 inline-block" />}
               {link.label}
             </Link>
           ))}
@@ -43,8 +45,9 @@ export function Header() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className="text-lg font-medium text-foreground/80 transition-colors hover:text-foreground"
+                    className="text-lg font-medium text-foreground/80 transition-colors hover:text-foreground flex items-center"
                   >
+                    {link.icon && <link.icon className="mr-2 h-5 w-5" />}
                     {link.label}
                   </Link>
                 ))}
@@ -62,3 +65,5 @@ export function Header() {
     </header>
   );
 }
+
+    

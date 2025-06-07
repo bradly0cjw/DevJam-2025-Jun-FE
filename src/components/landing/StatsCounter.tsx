@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import { Recycle } from 'lucide-react';
-import { INITIAL_KG_RETHREADED } from '@/lib/constants';
+import { INITIAL_KG_RETHREADED, APP_NAME } from '@/lib/constants';
 
 export function StatsCounter() {
   const [count, setCount] = useState(0);
@@ -29,7 +30,7 @@ export function StatsCounter() {
       };
       requestAnimationFrame(animateCount);
     }
-  }, [targetCount]); // Rerun if targetCount changes, though it's a const here
+  }, [targetCount, count]); // Added count to dependencies to avoid stale closure warning if targetCount changes
 
   return (
     <section className="py-12 md:py-16 bg-primary text-primary-foreground">
@@ -39,9 +40,11 @@ export function StatsCounter() {
           {count.toLocaleString()} KGs
         </p>
         <p className="text-lg md:text-xl opacity-90">
-          of clothing AI衣循環ed to date!
+          of clothing re-threaded by {APP_NAME} to date!
         </p>
       </div>
     </section>
   );
 }
+
+    

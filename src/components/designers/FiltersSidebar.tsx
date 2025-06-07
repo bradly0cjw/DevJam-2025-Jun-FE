@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -11,14 +12,13 @@ import { COLOR_SWATCHES, DESIGNER_FILTER_OPTIONS, FilterSectionIcons as Icons } 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Save, RotateCcw } from 'lucide-react';
 
-// Define a type for filters for clarity
 type Filters = {
   searchTerm?: string;
   categories: string[];
   conditions: string[];
   materials: string[];
   location?: string;
-  maxDistance?: number; // Example for a slider
+  maxDistance?: number; 
   colors: string[];
 };
 
@@ -27,7 +27,7 @@ const initialFilters: Filters = {
   conditions: [],
   materials: [],
   colors: [],
-  maxDistance: 50, // default 50km/miles
+  maxDistance: 50, 
 };
 
 interface FiltersSidebarProps {
@@ -197,3 +197,5 @@ export function FiltersSidebar({ onFiltersChange }: FiltersSidebarProps) {
     </aside>
   );
 }
+
+    

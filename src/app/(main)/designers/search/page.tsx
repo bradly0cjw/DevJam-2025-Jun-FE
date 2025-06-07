@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -10,13 +11,11 @@ import { CLOTHING_ITEMS } from '@/lib/constants';
 export default function DesignerSearchPage() {
   const [filteredItems, setFilteredItems] = useState<ClothingItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeFilters, setActiveFilters] = useState<any>({}); // Replace any with a proper Filter type
+  const [activeFilters, setActiveFilters] = useState<any>({}); 
 
   useEffect(() => {
-    // Simulate fetching items
     setIsLoading(true);
     setTimeout(() => {
-      // Basic filtering simulation (replace with actual logic)
       let items = CLOTHING_ITEMS;
       if (activeFilters.searchTerm) {
         items = items.filter(item => 
@@ -29,20 +28,20 @@ export default function DesignerSearchPage() {
         items = items.filter(item => activeFilters.categories.includes(item.category.toLowerCase()));
       }
       if (activeFilters.materials?.length > 0) {
-        items = items.filter(item => activeFilters.materials.includes(item.material.toLowerCase()));
+        // Assuming item.material is a string and activeFilters.materials is an array of strings
+        items = items.filter(item => 
+            activeFilters.materials.some((filterMat: string) => item.material.toLowerCase().includes(filterMat.toLowerCase()))
+        );
       }
       if (activeFilters.conditions?.length > 0) {
         items = items.filter(item => activeFilters.conditions.includes(item.condition.toLowerCase()));
       }
-      if (activeFilters.localPickup) {
-        items = items.filter(item => item.localPickup);
+       if (activeFilters.colors?.length > 0 && item.color) { // Ensure item.color exists
+        items = items.filter(item => 
+            item.color && activeFilters.colors.some((filterColor: string) => item.color!.toLowerCase() === filterColor.toLowerCase())
+        );
       }
-      if (activeFilters.newItems) {
-        items = items.filter(item => item.isNewItem);
-      }
-      if (activeFilters.matchesRequest) {
-        items = items.filter(item => item.matchesRequest);
-      }
+      // Add location and distance filtering here if needed
       
       setFilteredItems(items);
       setIsLoading(false);
@@ -54,7 +53,7 @@ export default function DesignerSearchPage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]"> {/* Adjust min-h based on header height */}
+    <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
       <FiltersSidebar onFiltersChange={handleFiltersChange} />
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         <h1 className="text-3xl font-bold font-headline text-primary mb-6">
@@ -82,3 +81,5 @@ export default function DesignerSearchPage() {
     </div>
   );
 }
+
+    

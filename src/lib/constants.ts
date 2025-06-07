@@ -1,7 +1,7 @@
-import type { Icon as LucideIcon } from 'lucide-react';
-import type { Icon as LucideIconType } from 'lucide-react'; // Renamed to avoid conflict if LucideIcon is also a value
-import { Shirt, Footprints, Sparkles, HandHeart, HelpCircle, CheckCircle, XCircle, MapPin, Palette, Tag, Filter, ListChecks, Users, Recycle, Wind, Search, Settings, Save, Trash2, Square, Home, ShoppingBag, Info, Phone, ThumbsUp, Meh } from 'lucide-react';
-import type { IconSelectItem } from './types';
+
+import type { Icon as LucideIconType } from 'lucide-react';
+import { Shirt, Footprints, Sparkles, HandHeart, HelpCircle, CheckCircle, XCircle, MapPin, Palette, Tag, Filter, ListChecks, Users, Recycle, Wind, Search, Settings, Save, Trash2, Square, Home, ShoppingBag, Info, Phone, ThumbsUp, Meh, BrainCircuit } from 'lucide-react';
+import type { IconSelectItem, ClothingItem } from './types';
 
 export const APP_NAME = "AI衣循環";
 
@@ -9,6 +9,7 @@ export const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/list-item", label: "Give Clothes", icon: HandHeart },
   { href: "/designers/search", label: "Find Materials", icon: ShoppingBag },
+  { href: "/smart-matching", label: "Smart Matching", icon: BrainCircuit },
 ];
 
 export const FOOTER_LINKS = [
@@ -18,7 +19,7 @@ export const FOOTER_LINKS = [
   { href: "/privacy", label: "Privacy Policy" },
 ];
 
-export const HOW_IT_WORKS_STEPS: { title: string; description: string; icon: typeof ListChecks }[] = [
+export const HOW_IT_WORKS_STEPS: { title: string; description: string; icon: LucideIconType }[] = [
   { title: "List Your Clothes", description: "Easily upload photos and details of items you no longer need.", icon: ListChecks },
   { title: "Connect with a Creator", description: "Designers discover your items and can request them for their projects.", icon: Users },
   { title: "Give a Second Life", description: "Your old clothes become part of something new and beautiful, reducing waste.", icon: Recycle },
@@ -88,37 +89,18 @@ export const FilterSectionIcons = {
 // Placeholder: KGs rethreaded
 export const INITIAL_KG_RETHREADED = 12345;
 
-export const CLOTHING_ITEMS = [
+// Sample clothing items (keeping some English for brevity in this example)
+export const CLOTHING_ITEMS: ClothingItem[] = [
   {
     id: 'item-1',
     title: 'Vintage Leather Bag',
     description: 'Handcrafted leather bag with unique patina and brass hardware',
-    price: 299,
     imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=60',
-    designer: 'Elena Moreau',
     category: 'Accessories',
-    condition: 'Excellent',
-    size: 'M',
-    color: 'Brown',
+    condition: 'excellent',
     material: 'Leather',
-    style: 'Vintage',
-    measurements: {
-      width: '12"',
-      height: '10"',
-      depth: '4"',
-      strap: '24"'
-    },
-    care: 'Professional leather care',
     giverLocation: 'Paris, France',
-    shipping: 'Worldwide',
-    returnPolicy: '14 days',
-    authenticity: 'Verified',
-    story: 'This exquisite leather bag was crafted by Elena Moreau in her Paris atelier. The natural patina tells a story of its journey through time, while the quality craftsmanship ensures it will continue to age beautifully. Features brass hardware and a spacious interior.',
     tags: ['vintage', 'leather', 'bag', 'handcrafted', 'accessories'],
-    likes: 156,
-    views: 892,
-    createdAt: '2024-03-15T10:30:00Z',
-    updatedAt: '2024-03-15T10:30:00Z',
     isNewItem: true,
     matchesRequest: false,
     localPickup: true,
@@ -128,32 +110,12 @@ export const CLOTHING_ITEMS = [
     id: 'item-3',
     title: 'Leather Jacket',
     description: 'Vintage leather jacket with unique patina',
-    price: 399,
     imageUrl: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=60',
-    designer: 'Aisha Khan',
     category: 'Outerwear',
-    condition: 'Good',
-    size: 'L',
-    color: 'Brown',
+    condition: 'good',
     material: 'Leather',
-    style: 'Vintage',
-    measurements: {
-      chest: '44"',
-      waist: '42"',
-      hips: '46"',
-      length: '28"'
-    },
-    care: 'Professional leather care',
     giverLocation: 'London, UK',
-    shipping: 'Worldwide',
-    returnPolicy: '14 days',
-    authenticity: 'Verified',
-    story: 'This vintage leather jacket was sourced from a 1970s collection and restored by Aisha Khan. The natural patina tells a story of its journey through time, while the quality craftsmanship ensures it will continue to age beautifully.',
     tags: ['vintage', 'leather', 'jacket', 'patina', 'restored'],
-    likes: 234,
-    views: 1234,
-    createdAt: '2024-03-13T09:15:00Z',
-    updatedAt: '2024-03-13T09:15:00Z',
     isNewItem: false,
     matchesRequest: true,
     localPickup: true,
@@ -250,3 +212,5 @@ export const CLOTHING_ITEMS = [
     description: 'A stunning silk maxi dress in excellent condition. Features a flowing silhouette and delicate fabric that catches the light beautifully. Perfect for special occasions or creative redesign.'
   }
 ];
+
+    
