@@ -7,13 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { firebaseApp, firebaseFunctions, firebaseStorage } from '@/lib/firebase/client'; // Ensure this path is correct
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes } from "firebase/storage";
 import { httpsCallable } from "firebase/functions";
 import NextImage from 'next/image'; // Using NextImage for optimized remote images
 import { Loader2, UploadCloud, CheckCircle, XCircle, Shirt } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { APP_NAME } from '@/lib/constants';
 import type { RecommendedItem } from '@/ai/flows/recommend-outfit-flow'; // Ensure this type is correctly imported
+import { Badge } from '@/components/ui/badge';
 
 
 export default function SmartMatchingPage() {
@@ -38,6 +39,13 @@ export default function SmartMatchingPage() {
   };
 
   const handleUploadAndMatch = async () => {
+    if (!firebaseStorage || !firebaseFunctions) {
+      setError("Firebase services are not available. Please check your Firebase configuration in .env and ensure client SDK is initialized correctly.");
+      setStatusMessage("Initialization Error");
+      setIsLoading(false);
+      return;
+    }
+
     if (!selectedFile) {
       setError("Please select an image file first.");
       setStatusMessage("No image selected.");
@@ -75,8 +83,8 @@ export default function SmartMatchingPage() {
 
     } catch (e: any) {
       console.error("An error occurred:", e);
-      setError(e.message || "An unexpected error occurred.");
-      setStatusMessage(`Error: ${e.message}`);
+      setError(String(e?.message || "An unexpected error occurred."));
+      setStatusMessage(`Error: ${String(e?.message || 'Unknown error')}`);
     } finally {
       setIsLoading(false);
     }
@@ -197,5 +205,3 @@ export default function SmartMatchingPage() {
     </div>
   );
 }
-
-    
