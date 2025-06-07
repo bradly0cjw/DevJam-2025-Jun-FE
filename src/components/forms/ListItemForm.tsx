@@ -243,7 +243,9 @@ export function ListItemForm() {
                   disabled={!photoPreview || isSuggestingTags}
                   variant="outline"
                   className="mt-2 w-full"
-                >
+                >Description & Tags
+                Review & List
+                Step 2 of 3
                   {isSuggestingTags ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                   Suggest Tags with AI
                 </Button>
@@ -299,7 +301,9 @@ export function ListItemForm() {
                 disabled={
                   currentStep === 1 
                     ? !watch("photo") || !watch("category") || !watch("condition")
-                    : !isValid && currentStep !== 3
+                    : currentStep === 2
+                      ? !watch("title") || !watch("description") || !watch("materials")?.length
+                      : !isValid && currentStep !== 3
                 }
               >
                 Next
