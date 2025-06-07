@@ -39,7 +39,7 @@ export function StatsCounter() {
           {count.toLocaleString()} KGs
         </p>
         <p className="text-lg md:text-xl opacity-90">
-          of clothing ReThreaded to date!
+          of clothing AI衣循環ed to date!
         </p>
       </div>
     </section>

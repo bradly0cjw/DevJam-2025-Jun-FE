@@ -6,7 +6,7 @@ export function HowItWorks() {
     <section className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold font-headline text-center text-primary mb-12">
-          How ReThread Works
+          How AI衣循環 Works
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {HOW_IT_WORKS_STEPS.map((step, index) => (

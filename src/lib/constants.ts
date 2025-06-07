@@ -1,8 +1,9 @@
 import type { Icon as LucideIcon } from 'lucide-react';
+import type { Icon as LucideIconType } from 'lucide-react'; // Renamed to avoid conflict if LucideIcon is also a value
 import { Shirt, Footprints, Sparkles, HandHeart, HelpCircle, CheckCircle, XCircle, MapPin, Palette, Tag, Filter, ListChecks, Users, Recycle, Wind, Search, Settings, Save, Trash2, Square, Home, ShoppingBag, Info, Phone, ThumbsUp, Meh } from 'lucide-react';
 import type { IconSelectItem } from './types';
 
-export const APP_NAME = "ReThread";
+export const APP_NAME = "AI衣循環";
 
 export const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home },
@@ -17,7 +18,7 @@ export const FOOTER_LINKS = [
   { href: "/privacy", label: "Privacy Policy" },
 ];
 
-export const HOW_IT_WORKS_STEPS: { title: string; description: string; icon: LucideIcon }[] = [
+export const HOW_IT_WORKS_STEPS: { title: string; description: string; icon: typeof ListChecks }[] = [
   { title: "List Your Clothes", description: "Easily upload photos and details of items you no longer need.", icon: ListChecks },
   { title: "Connect with a Creator", description: "Designers discover your items and can request them for their projects.", icon: Users },
   { title: "Give a Second Life", description: "Your old clothes become part of something new and beautiful, reducing waste.", icon: Recycle },
