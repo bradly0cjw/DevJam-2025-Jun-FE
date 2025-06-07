@@ -267,10 +267,9 @@ export function ListItemForm() {
                 className="ml-auto" 
                 disabled={
                   currentStep === 1 
-                    ? !watch("photo") || !watch("category") || !watch("condition")
-                    : currentStep === 2
-                      ? !watch("title") || !watch("description") || !watch("materials")?.length
-                      : !isValid && currentStep !== 3
+                    ? !!errors.photo || !!errors.category || !!errors.condition
+                    : // currentStep === 2, as currentStep < LIST_ITEM_STEPS.length (which is 3)
+                      !!errors.title || !!errors.description || !!errors.materials
                 }
               >
                 Next
