@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,7 +15,7 @@ import { ProgressBar } from "@/components/shared/ProgressBar";
 import { IconSelector } from "@/components/shared/IconSelector";
 import { ITEM_CATEGORIES, ITEM_CONDITIONS, COMMON_MATERIALS, LIST_ITEM_STEPS } from "@/lib/constants";
 import type { ClothingItem } from "@/lib/types";
-import { suggestClothingTags } from "@/ai/flows/suggest-clothing-tags";
+import { handleSuggestTags } from "@/ai/actions/suggest-tags-action";
 import { useToast } from "@/hooks/use-toast";
 import { UploadCloud, Tag, Sparkles, Loader2, X } from "lucide-react";
 import Image from 'next/image';
@@ -31,18 +32,6 @@ const listItemSchema = z.object({
 });
 
 type ListItemFormData = z.infer<typeof listItemSchema>;
-
-// Server action to handle AI tag suggestion
-async function handleSuggestTags(photoDataUri: string): Promise<string[]> {
-  "use server";
-  try {
-    const result = await suggestClothingTags({ photoDataUri });
-    return result.tags;
-  } catch (error) {
-    console.error("Error suggesting tags:", error);
-    return [];
-  }
-}
 
 
 export function ListItemForm() {
@@ -87,7 +76,7 @@ export function ListItemForm() {
     }
     setIsSuggestingTags(true);
     try {
-      const tags = await handleSuggestTags(photoPreview);
+      const tags = await handleSuggestTags(photoPreview); // Using the imported server action
       setSuggestedTags(tags);
       setValue("tags", [...customTags, ...tags]);
       toast({ title: "Tags Suggested", description: `${tags.length} tags were suggested by AI.` });
@@ -320,3 +309,4 @@ export function ListItemForm() {
     </Card>
   );
 }
+    
