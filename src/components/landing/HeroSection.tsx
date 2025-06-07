@@ -23,7 +23,7 @@ export function HeroSection() {
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline text-primary mb-6 tracking-tight">
-          Reimagine Fashion. ReThread Your Wardrobe with {APP_NAME}.
+          Reimagine Fashion. <br></br>{APP_NAME} Your Wardrobe.
         </h1>
         <p className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto mb-10">
           Connect with designers, give your clothes a new purpose, and champion sustainable style.
