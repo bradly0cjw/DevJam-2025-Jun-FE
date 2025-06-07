@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -13,10 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ProgressBar } from "@/components/shared/ProgressBar";
 import { IconSelector } from "@/components/shared/IconSelector";
 import { ITEM_CATEGORIES, ITEM_CONDITIONS, COMMON_MATERIALS, LIST_ITEM_STEPS } from "@/lib/constants";
-import type { ClothingItem } from "@/lib/types";
-import { handleSuggestTags } from "@/ai/actions/suggest-tags-action";
 import { useToast } from "@/hooks/use-toast";
-import { UploadCloud, Tag, Sparkles, Loader2, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import Image from 'next/image';
 
 const listItemSchema = z.object({
@@ -36,19 +34,22 @@ type ListItemFormData = z.infer<typeof listItemSchema>;
 export function ListItemForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [currentTagInput, setCurrentTagInput] = useState("");
-  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
   const { toast } = useToast();
 
   const { control, handleSubmit, setValue, watch, formState: { errors, isValid, isSubmitting } } = useForm<ListItemFormData>({
     resolver: zodResolver(listItemSchema),
     mode: "onChange", // Validate on change for better UX
     defaultValues: {
+      photo: null, // Initialize photo to null
+      category: "",  // Initialize category to an empty string
+      condition: "", // Initialize condition to an empty string
+      title: "",     // Initialize title to an empty string
+      description: "", // Initialize description to an empty string
       materials: [],
       tags: [],
+      location: "",  // Initialize location to an empty string
     }
   });
 
@@ -61,46 +62,24 @@ export function ListItemForm() {
         setPhotoPreview(reader.result as string);
       };
       reader.readAsDataURL(watchedPhoto);
-      setPhotoFile(watchedPhoto);
     } else {
       setPhotoPreview(null);
-      setPhotoFile(null);
     }
   }, [watchedPhoto]);
 
-  const onSuggestTags = async () => {
-    if (!photoPreview) {
-      toast({ title: "Upload Photo", description: "Please upload a photo first to suggest tags.", variant: "destructive" });
-      return;
-    }
-    setIsSuggestingTags(true);
-    try {
-      const tags = await handleSuggestTags(photoPreview); // Using the imported server action
-      setSuggestedTags(tags);
-      setValue("tags", [...customTags, ...tags]);
-      toast({ title: "Tags Suggested", description: `${tags.length} tags were suggested by AI.` });
-    } catch (error) {
-      toast({ title: "Error", description: "Could not suggest tags. Please try again.", variant: "destructive" });
-    } finally {
-      setIsSuggestingTags(false);
-    }
-  };
-  
   const handleAddTag = () => {
-    if (currentTagInput.trim() && !customTags.includes(currentTagInput.trim()) && !suggestedTags.includes(currentTagInput.trim())) {
+    if (currentTagInput.trim() && !customTags.includes(currentTagInput.trim())) {
       const newCustomTags = [...customTags, currentTagInput.trim()];
       setCustomTags(newCustomTags);
-      setValue("tags", [...newCustomTags, ...suggestedTags]);
+      setValue("tags", newCustomTags);
       setCurrentTagInput("");
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
     const newCustomTags = customTags.filter(tag => tag !== tagToRemove);
-    const newSuggestedTags = suggestedTags.filter(tag => tag !== tagToRemove);
     setCustomTags(newCustomTags);
-    setSuggestedTags(newSuggestedTags);
-    setValue("tags", [...newCustomTags, ...newSuggestedTags]);
+    setValue("tags", newCustomTags);
   };
 
 
@@ -111,7 +90,7 @@ export function ListItemForm() {
     const finalData = {
       ...data,
       photoDataUri: photoPreview, // Assuming photoPreview holds the data URI
-      tags: [...customTags, ...suggestedTags], // Combine tags
+      tags: customTags, // Only custom tags
     };
     delete (finalData as any).photo; // Remove File object if not needed by backend
 
@@ -237,20 +216,8 @@ export function ListItemForm() {
                   />
                   <Button type="button" onClick={handleAddTag} variant="outline">Add Tag</Button>
                 </div>
-                <Button
-                  type="button"
-                  onClick={onSuggestTags}
-                  disabled={!photoPreview || isSuggestingTags}
-                  variant="outline"
-                  className="mt-2 w-full"
-                >Description & Tags
-                Review & List
-                Step 2 of 3
-                  {isSuggestingTags ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  Suggest Tags with AI
-                </Button>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {[...customTags, ...suggestedTags].map(tag => (
+                  {customTags.map(tag => (
                     <Badge key={tag} variant="secondary" className="text-sm py-1 px-2">
                       {tag}
                       <Button type="button" onClick={() => handleRemoveTag(tag)} variant="ghost" size="icon" className="ml-1 h-4 w-4 p-0">
@@ -281,7 +248,7 @@ export function ListItemForm() {
                   <p><strong>Category:</strong> {ITEM_CATEGORIES.find(c => c.id === watch("category"))?.name}</p>
                   <p><strong>Condition:</strong> {ITEM_CONDITIONS.find(c => c.id === watch("condition"))?.name}</p>
                   <p><strong>Materials:</strong> {watch("materials")?.join(', ')}</p>
-                  <p><strong>Tags:</strong> {[...customTags, ...suggestedTags].join(', ')}</p>
+                  <p><strong>Tags:</strong> {customTags.join(', ')}</p>
                 </CardContent>
               </Card>
             </div>
@@ -321,4 +288,3 @@ export function ListItemForm() {
     </Card>
   );
 }
-    
