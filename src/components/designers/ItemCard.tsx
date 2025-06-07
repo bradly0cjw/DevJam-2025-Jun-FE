@@ -18,10 +18,11 @@ export function ItemCard({ item }: ItemCardProps) {
           <Image
             src={item.imageUrl}
             alt={item.title}
-            layout="fill"
-            objectFit="cover"
-            className="group-hover:scale-105 transition-transform duration-300"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
             data-ai-hint="clothing fashion item"
+            priority={item.isNewItem}
           />
         </Link>
         <div className="absolute top-2 right-2 flex flex-col gap-1">
@@ -32,18 +33,18 @@ export function ItemCard({ item }: ItemCardProps) {
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <Link href={`/item/${item.id}`} passHref>
-            <CardTitle className="text-lg font-semibold font-headline text-primary mb-1 hover:underline cursor-pointer truncate">
+          <CardTitle className="text-lg font-semibold font-headline text-primary mb-1 hover:underline cursor-pointer truncate max-w-full">
             {item.title}
-            </CardTitle>
+          </CardTitle>
         </Link>
-        <div className="text-sm text-foreground/70 space-y-1 mb-2">
+        <div className="text-sm text-foreground/80 space-y-1 mb-2">
           <div className="flex items-center">
             <Tag className="w-4 h-4 mr-1.5 text-primary/70" />
-            <span>{item.material} - {item.category}</span>
+            <span className="line-clamp-1">{item.material} - {item.category}</span>
           </div>
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-1.5 text-primary/70" />
-            <span>{item.giverLocation}</span>
+            <span className="line-clamp-1">{item.giverLocation}</span>
           </div>
           <div className="flex items-center">
             <CheckCircle className="w-4 h-4 mr-1.5 text-primary/70" />
@@ -53,13 +54,16 @@ export function ItemCard({ item }: ItemCardProps) {
         {item.tags && item.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {item.tags.slice(0, 3).map(tag => (
-              <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+              <Badge key={tag} variant="outline" className="text-sm">{tag}</Badge>
             ))}
+            {item.tags.length > 3 && (
+              <Badge variant="outline" className="text-sm">+{item.tags.length - 3}</Badge>
+            )}
           </div>
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0 border-t mt-auto">
-         <Button variant="outline" size="sm" className="w-full group/button border-primary/50 text-primary hover:bg-primary/10 hover:text-primary">
+        <Button variant="outline" size="sm" className="w-full group/button border-primary/50 text-primary hover:bg-primary/10 hover:text-primary">
           Quick Request
           <ShoppingBag className="ml-2 h-4 w-4 group-hover/button:text-accent transition-colors" />
         </Button>

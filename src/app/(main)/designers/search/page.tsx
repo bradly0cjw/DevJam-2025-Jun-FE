@@ -5,24 +5,7 @@ import { FiltersSidebar } from '@/components/designers/FiltersSidebar';
 import { ItemCard } from '@/components/designers/ItemCard';
 import type { ClothingItem } from '@/lib/types';
 import { Loader2, SearchX } from 'lucide-react';
-
-// Placeholder data for items
-const placeholderItems: ClothingItem[] = Array.from({ length: 15 }, (_, i) => ({
-  id: `item-${i + 1}`,
-  title: `Vintage Silk Scarf ${i + 1}`,
-  imageUrl: `https://placehold.co/400x${Math.floor(300 + Math.random() * 300)}.png`, // Random height for masonry
-  material: i % 3 === 0 ? 'Silk' : (i % 3 === 1 ? 'Cotton' : 'Wool'),
-  giverLocation: 'New York, NY',
-  condition: i % 2 === 0 ? 'good' : 'excellent',
-  category: i % 4 === 0 ? 'Accessories' : (i % 4 === 1 ? 'Tops' : (i % 4 === 2 ? 'Bottoms' : 'Outerwear')),
-  tags: ['vintage', i % 2 === 0 ? 'floral' : 'geometric', 'unique'],
-  isNewItem: i < 3,
-  matchesRequest: i === 1 || i === 5,
-  localPickup: i % 3 === 0,
-  dateAdded: new Date().toISOString(),
-  description: `A beautiful piece of clothing item number ${i+1}. Perfect for your next creative project.`,
-}));
-
+import { CLOTHING_ITEMS } from '@/lib/constants';
 
 export default function DesignerSearchPage() {
   const [filteredItems, setFilteredItems] = useState<ClothingItem[]>([]);
@@ -34,14 +17,32 @@ export default function DesignerSearchPage() {
     setIsLoading(true);
     setTimeout(() => {
       // Basic filtering simulation (replace with actual logic)
-      let items = placeholderItems;
+      let items = CLOTHING_ITEMS;
       if (activeFilters.searchTerm) {
-        items = items.filter(item => item.title.toLowerCase().includes(activeFilters.searchTerm.toLowerCase()));
+        items = items.filter(item => 
+          item.title.toLowerCase().includes(activeFilters.searchTerm.toLowerCase()) ||
+          item.description?.toLowerCase().includes(activeFilters.searchTerm.toLowerCase()) ||
+          item.tags.some(tag => tag.toLowerCase().includes(activeFilters.searchTerm.toLowerCase()))
+        );
       }
       if (activeFilters.categories?.length > 0) {
         items = items.filter(item => activeFilters.categories.includes(item.category.toLowerCase()));
       }
-      // Add more filter logic here based on activeFilters
+      if (activeFilters.materials?.length > 0) {
+        items = items.filter(item => activeFilters.materials.includes(item.material.toLowerCase()));
+      }
+      if (activeFilters.conditions?.length > 0) {
+        items = items.filter(item => activeFilters.conditions.includes(item.condition.toLowerCase()));
+      }
+      if (activeFilters.localPickup) {
+        items = items.filter(item => item.localPickup);
+      }
+      if (activeFilters.newItems) {
+        items = items.filter(item => item.isNewItem);
+      }
+      if (activeFilters.matchesRequest) {
+        items = items.filter(item => item.matchesRequest);
+      }
       
       setFilteredItems(items);
       setIsLoading(false);

@@ -6,9 +6,30 @@ import { Button } from '../ui/button';
 import { ArrowRight } from 'lucide-react';
 
 const placeholderDesigners: Designer[] = [
-  { id: '1', name: 'Elena Moreau', workImageUrl: 'https://placehold.co/400x500.png', dataAiHint: 'fashion designer portrait', specialties: ['Upcycled Denim', 'Avant-Garde'] },
-  { id: '2', name: 'Kenji Tanaka', workImageUrl: 'https://placehold.co/400x500.png', dataAiHint: 'textile artist workshop', specialties: ['Kintsugi Textiles', 'Minimalist'] },
-  { id: '3', name: 'Aisha Khan', workImageUrl: 'https://placehold.co/400x500.png', dataAiHint: 'sustainable fashion piece', specialties: ['Bohemian Chic', 'Natural Dyes'] },
+  {
+    id: '1',
+    name: 'Elena Moreau',
+    workImageUrl: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=800&auto=format&fit=crop&q=60',
+    dataAiHint: 'fashion designer portrait',
+    specialties: ['Upcycled Denim', 'Avant-Garde'],
+    profileUrl: '/designers/1'
+  },
+  {
+    id: '2',
+    name: 'Kenji Tanaka',
+    workImageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=60',
+    dataAiHint: 'textile artist workshop',
+    specialties: ['Kintsugi Textiles', 'Minimalist'],
+    profileUrl: '/designers/2'
+  },
+  {
+    id: '3',
+    name: 'Aisha Khan',
+    workImageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=60',
+    dataAiHint: 'sustainable fashion piece',
+    specialties: ['Bohemian Chic', 'Natural Dyes'],
+    profileUrl: '/designers/3'
+  },
 ];
 
 export function FeaturedDesigners() {
@@ -25,10 +46,9 @@ export function FeaturedDesigners() {
                 <div className="relative h-80 w-full">
                   <Image
                     src={designer.workImageUrl}
-                    alt={`Work by ${designer.name}`}
-                    layout="fill"
-                    objectFit="cover"
-                    className="group-hover:scale-105 transition-transform duration-300"
+                    alt={`Portrait of ${designer.name}`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                     data-ai-hint={designer.dataAiHint}
                   />
                 </div>
