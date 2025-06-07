@@ -1,5 +1,3 @@
-
-import type { Icon as LucideIconType } from 'lucide-react';
 import { Shirt, Footprints, Sparkles, HandHeart, HelpCircle, CheckCircle, XCircle, MapPin, Palette, Tag, Filter, ListChecks, Users, Recycle, Wind, Search, Settings, Save, Trash2, Square, Home, ShoppingBag, Info, Phone, ThumbsUp, Meh, BrainCircuit } from 'lucide-react';
 import type { IconSelectItem, ClothingItem } from './types';
 
@@ -19,7 +17,7 @@ export const FOOTER_LINKS = [
   { href: "/privacy", label: "Privacy Policy" },
 ];
 
-export const HOW_IT_WORKS_STEPS: { title: string; description: string; icon: LucideIconType }[] = [
+export const HOW_IT_WORKS_STEPS: { title: string; description: string; icon: typeof ListChecks }[] = [
   { title: "List Your Clothes", description: "Easily upload photos and details of items you no longer need.", icon: ListChecks },
   { title: "Connect with a Creator", description: "Designers discover your items and can request them for their projects.", icon: Users },
   { title: "Give a Second Life", description: "Your old clothes become part of something new and beautiful, reducing waste.", icon: Recycle },
@@ -213,4 +211,3 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
   }
 ];
 
-    

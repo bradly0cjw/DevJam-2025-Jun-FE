@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -35,11 +34,6 @@ export default function DesignerSearchPage() {
       }
       if (activeFilters.conditions?.length > 0) {
         items = items.filter(item => activeFilters.conditions.includes(item.condition.toLowerCase()));
-      }
-       if (activeFilters.colors?.length > 0 && item.color) { // Ensure item.color exists
-        items = items.filter(item => 
-            item.color && activeFilters.colors.some((filterColor: string) => item.color!.toLowerCase() === filterColor.toLowerCase())
-        );
       }
       // Add location and distance filtering here if needed
       
@@ -82,4 +76,3 @@ export default function DesignerSearchPage() {
   );
 }
 
-    

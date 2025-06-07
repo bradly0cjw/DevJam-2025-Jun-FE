@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -48,7 +47,7 @@ export function ListItemForm() {
     resolver: zodResolver(listItemSchema),
     mode: "onChange", 
     defaultValues: {
-      photo: null,
+      photo: undefined, // Changed from null to undefined
       category: "",
       condition: "",
       title: "",
@@ -182,8 +181,7 @@ export function ListItemForm() {
                           type="file"
                           accept="image/*"
                           className="hidden" // Hide the default input, use button instead
-                          onChange={(e) => onChange(e.target.files ? e.target.files[0] : null)}
-                          ref={photoInputRef}
+                          onChange={(e) => onChange(e.target.files ? e.target.files[0] : undefined)} // Ensure undefined if no file
                           {...restField}
                         />
                       )}
@@ -360,4 +358,3 @@ export function ListItemForm() {
   );
 }
 
-    
